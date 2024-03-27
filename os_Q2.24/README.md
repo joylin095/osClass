@@ -13,6 +13,14 @@ gcc -o a main.c
 2. enter the name of input file(**sample.txt**)
 3. enter the of output file(**output.txt**)
 
+## command to create a traces system calls file
+
+```
+strace -o trace_output.txt ./a
+```
+
 ## Screenshots
 
 ![img](2.24.PNG)
+
+![img](2.24-1.png)
