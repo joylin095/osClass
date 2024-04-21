@@ -18,6 +18,13 @@ typedef struct
 
 int main()
 {
+    printf("Initial arrays:\n");
+    for (int i = 0; i < SIZE; i++)
+    {
+        printf("%d ", numbers[i]);
+    }
+    printf("\n");
+
     pthread_t thread1, thread2, thread3;
     ThreadArgs args1 = {0, SIZE / 2};
     ThreadArgs args2 = {SIZE / 2, SIZE};
@@ -29,6 +36,7 @@ int main()
     pthread_join(thread2, NULL);
 
     pthread_create(&thread3, NULL, Merge, NULL);
+    pthread_join(thread3, NULL);
 
     printf("Sorted Array: ");
     for (int i = 0; i < SIZE; i++)
