@@ -3,11 +3,10 @@
 #include <pthread.h>
 #include <unistd.h>
 
-#define MAX_FARMERS 20
+#define MAX_FARMERS 5
 
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
-pthread_cond_t northbound = PTHREAD_COND_INITIALIZER;
-pthread_cond_t southbound = PTHREAD_COND_INITIALIZER;
+pthread_cond_t crossCond = PTHREAD_COND_INITIALIZER;
 
 int on_bridge = 0;
 
@@ -17,8 +16,7 @@ void *Northbound_farmer(void *arg)
 
     while (on_bridge)
     {
-        printf("Northbound farmer is waiting.\n");
-        pthread_cond_wait(&northbound, &mutex);
+        pthread_cond_wait(&crossCond, &mutex);
     }
 
     on_bridge = 1;
@@ -29,7 +27,7 @@ void *Northbound_farmer(void *arg)
 
     pthread_mutex_lock(&mutex);
     on_bridge = 0;
-    pthread_cond_signal(&southbound);
+    pthread_cond_signal(&crossCond);
     pthread_mutex_unlock(&mutex);
     return NULL;
 }
@@ -40,8 +38,7 @@ void *Southbound_farmer(void *arg)
 
     while (on_bridge)
     {
-        printf("Southbound farmer is waiting.\n");
-        pthread_cond_wait(&southbound, &mutex);
+        pthread_cond_wait(&crossCond, &mutex);
     }
 
     on_bridge = 1;
@@ -52,7 +49,7 @@ void *Southbound_farmer(void *arg)
 
     pthread_mutex_lock(&mutex);
     on_bridge = 0;
-    pthread_cond_signal(&northbound);
+    pthread_cond_signal(&crossCond);
     pthread_mutex_unlock(&mutex);
     return NULL;
 }
