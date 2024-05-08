@@ -1,6 +1,7 @@
 {
   "files.associations": {
     "sched.h": "c",
-    "uaccess.h": "c"
+    "uaccess.h": "c",
+    "pthread.h": "c"
   }
 }
