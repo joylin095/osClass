@@ -15,8 +15,8 @@ int insertPointer = 0, removePointer = 0;
 
 void InsertItem(buffer_item item, int pid);
 void RemoveItem(int cid);
-void *Producer(void *pid);
-void *Consumer(void *cid);
+void *Producer(void *producerNo);
+void *Consumer(void *consumerNo);
 
 int main(int argc, char *argv[])
 {
@@ -36,6 +36,12 @@ int main(int argc, char *argv[])
     if (producerNum > 5 || consumerNum > 5)
     {
         printf("producer and consumer max 5\n");
+        return 0;
+    }
+    else if (consumerNum > producerNum)
+    {
+        printf("consumer cannot be larger than producer\n");
+        return 0;
     }
 
     pthread_mutex_init(&mutex, NULL);
@@ -73,7 +79,7 @@ int main(int argc, char *argv[])
     return 0;
 }
 
-void *Producer(void *pid)
+void *Producer(void *producerNo)
 {
     buffer_item item;
     int r;
@@ -82,27 +88,27 @@ void *Producer(void *pid)
     sleep(r);
     item = rand();
 
-    InsertItem(item, *((int *)pid));
+    InsertItem(item, *((int *)producerNo));
 }
 
-void *Consumer(void *cid)
+void *Consumer(void *consumerNo)
 {
     int r;
 
     r = rand() % 5;
     sleep(r);
 
-    RemoveItem(*((int *)cid));
+    RemoveItem(*((int *)consumerNo));
 }
 
-void InsertItem(buffer_item item, int pid)
+void InsertItem(buffer_item item, int producerNo)
 {
     sem_wait(&empty);
     pthread_mutex_lock(&mutex);
 
     buffer[insertPointer] = item;
 
-    printf("Producer #%d inserted item %d at buffer position %d\n", pid, item, insertPointer);
+    printf("Producer #%d inserted item %d at buffer position %d\n", producerNo, item, insertPointer);
 
     insertPointer = (insertPointer + 1) % 5;
 
@@ -110,14 +116,14 @@ void InsertItem(buffer_item item, int pid)
     sem_post(&full);
 }
 
-void RemoveItem(int cid)
+void RemoveItem(int consumerNo)
 {
     sem_wait(&full);
     pthread_mutex_lock(&mutex);
 
     buffer_item item = buffer[removePointer];
 
-    printf("Consumer #%d removed item %d at buffer position %d\n", cid, item, removePointer);
+    printf("Consumer #%d removed item %d at buffer position %d\n", consumerNo, item, removePointer);
 
     removePointer = (removePointer + 1) % 5;
 
